@@ -1,6 +1,6 @@
 # Ubatuba_COVID-19
 
-DataGathering :right_arrow: GeneratingMainDataFrame :right_arrow: DataAssessment :right_arrow: ExploratoryDataAnalysis
+DataGathering :arrow_right: GeneratingMainDataFrame :arrow_right: DataAssessment :arrow_right: ExploratoryDataAnalysis
 
 ### Main data frame structure
 
