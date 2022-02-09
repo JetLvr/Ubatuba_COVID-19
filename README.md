@@ -1,6 +1,6 @@
 # Ubatuba_COVID-19
 
-This work was developed as a demonstration of some of the technologies and techniques used in stages of the data analysis process. :beginner::brazil:
+This work was developed as a demonstration of some of the technologies and techniques used in stages of the data analysis process. :beginner::brazil:  
 I'm currently working on improving its documentation.
 
 The project consists of an analysis of data on the covid-19 pandemic in the city of Ubatuba, on the northern coast of the state of São Paulo, in Brazil. And a data application, which displays some information about this data dynamically.
