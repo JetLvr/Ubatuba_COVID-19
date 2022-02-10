@@ -158,7 +158,7 @@ app.layout = dbc.Container( className="container",
                         id = "drop",
                         options = [
                             {"label":"Casos Confirmados Por Dia","value":"conf_dia"},
-                            {"label":"Sínd.Resp.Grave Por Dia","value":"sars_dia"},
+                            {"label":"Recuperados por Dia","value":"rec_dia"},
                             {"label":"Notificações","value":"notf_acu"},
                             {"label":"Confirmados","value":"conf_acu"},
                             {"label":"Sexo Dos Pacientes Confirmados","value":"sex_acu"},
@@ -231,7 +231,7 @@ def switch_language(value):
         f2 = "Selecione que tipo de dados deseja visualizar:"
         dr = [
             {"label":"Casos Confirmados Por Dia","value":"conf_dia"},
-            {"label":"Sínd.Resp.Grave Por Dia","value":"sars_dia"},
+            {"label":"Recuperados Por Dia","value":"rec_dia"},
             {"label":"Notificações","value":"notf_acu"},
             {"label":"Confirmados","value":"conf_acu"},
             {"label":"Sexo Dos Pacientes Confirmados","value":"sex_acu"},
@@ -260,12 +260,12 @@ def switch_language(value):
         c = "Confirmed cases"
         n = "** New cases"
         a = "Under observation"
-        o = "Confirmed decease"
-        no = "** New deceased"
+        o = "Confirmed deaths"
+        no = "** New deaths"
         f2 = "Select what type of data you want to visualize:"
         dr = [
             {"label":"Cases Per Day","value":"conf_dia"},
-            {"label":"SARS Per Day","value":"sars_dia"},
+            {"label":"Recovered Per Day","value":"rec_dia"},
             {"label":"Notifications","value":"notf_acu"},
             {"label":"Confirmed","value":"conf_acu"},
             {"label":"Confirmed Patient's gender","value":"sex_acu"},
@@ -313,34 +313,55 @@ def switch_language(value):
     Output("obitos-text", "children"),
     Output("obitos-na-data-text", "children"),
     ],
-    Input("date-picker", "date")
+    [
+    Input("date-picker", "date"),
+    Input("language", "value")
+    ]
 )
-def pick_a_date(date):
+def pick_a_date(date, lng):
     
     df_data_on_date = asf[asf["datetime"] == date]
 
-    recuperados_acumulado = "-" if df_data_on_date["healed"].isna().values[0] else f'{int(df_data_on_date["healed"].values[0]):,}'.replace(",", ".")  
-    acompanhamento = "-" if df_data_on_date["under_obs"].isna().values[0]  else f'{int(df_data_on_date["under_obs"].values[0]):,}'.replace(",", ".")  
-    casos_acumulado = "-" if df_data_on_date["positive"].isna().values[0]  else f'{int(df_data_on_date["positive"].values[0]):,}'.replace(",", ".")  
-    casos_novos = "-" if df_data_on_date["positive_s"].isna().values[0]  else f'{int(df_data_on_date["positive_s"].values[0]):,}'.replace(",", ".")  
-    obitos_acumulado = "-" if df_data_on_date["death"].isna().values[0]  else f'{int(df_data_on_date["death"].values[0]):,}'.replace(",", ".")  
-    obitos_novos = "-" if df_data_on_date["death_s"].isna().values[0]  else f'{int(df_data_on_date["death_s"].values[0]):,}'.replace(",", ".")  
-    data_nova = df_data_on_date.iloc[0,0].strftime("%d/%m/%Y")
-    return (
-            recuperados_acumulado, 
-            acompanhamento, 
-            casos_acumulado, 
-            casos_novos, 
-            obitos_acumulado, 
-            obitos_novos
-            )
+    if lng == "por":
+        recuperados_acumulado = "-" if df_data_on_date["recovered"].isna().values[0] else f'{int(df_data_on_date["recovered"].values[0]):,}'.replace(",", ".")  
+        acompanhamento = "-" if df_data_on_date["underobs"].isna().values[0]  else f'{int(df_data_on_date["underobs"].values[0]):,}'.replace(",", ".")  
+        casos_acumulado = "-" if df_data_on_date["positive"].isna().values[0]  else f'{int(df_data_on_date["positive"].values[0]):,}'.replace(",", ".")  
+        casos_novos = "-" if df_data_on_date["positive_s"].isna().values[0]  else f'{int(df_data_on_date["positive_s"].values[0]):,}'.replace(",", ".")  
+        obitos_acumulado = "-" if df_data_on_date["deaths"].isna().values[0]  else f'{int(df_data_on_date["deaths"].values[0]):,}'.replace(",", ".")  
+        obitos_novos = "-" if df_data_on_date["deaths_s"].isna().values[0]  else f'{int(df_data_on_date["deaths_s"].values[0]):,}'.replace(",", ".")  
+        data_nova = df_data_on_date.iloc[0,0].strftime("%d/%m/%Y")
+        return (
+                recuperados_acumulado, 
+                acompanhamento, 
+                casos_acumulado, 
+                casos_novos, 
+                obitos_acumulado, 
+                obitos_novos
+        )
+    else:
+        recuperados_acumulado = "-" if df_data_on_date["recovered"].isna().values[0] else f'{int(df_data_on_date["recovered"].values[0]):,}'  
+        acompanhamento = "-" if df_data_on_date["underobs"].isna().values[0]  else f'{int(df_data_on_date["underobs"].values[0]):,}'  
+        casos_acumulado = "-" if df_data_on_date["positive"].isna().values[0]  else f'{int(df_data_on_date["positive"].values[0]):,}'  
+        casos_novos = "-" if df_data_on_date["positive_s"].isna().values[0]  else f'{int(df_data_on_date["positive_s"].values[0]):,}'  
+        obitos_acumulado = "-" if df_data_on_date["deaths"].isna().values[0]  else f'{int(df_data_on_date["deaths"].values[0]):,}'  
+        obitos_novos = "-" if df_data_on_date["deaths_s"].isna().values[0]  else f'{int(df_data_on_date["deaths_s"].values[0]):,}'  
+        data_nova = df_data_on_date.iloc[0,0].strftime("%d/%m/%Y")
+        return (
+                recuperados_acumulado, 
+                acompanhamento, 
+                casos_acumulado, 
+                casos_novos, 
+                obitos_acumulado, 
+                obitos_novos
+        )
+
 
 @app.callback(
     Output("radio2","value"),
     Input("drop","value")
 )
 def change_labels(value):
-    if value not in ["conf_dia","sars_dia"]:
+    if value not in ["conf_dia","rec_dia"]:
         return "sm"
     else:
         return "fe"
@@ -350,7 +371,7 @@ def change_labels(value):
     Input("drop","value")
 )
 def change_labels_2(value):
-    if value not in ["conf_dia","sars_dia"]:
+    if value not in ["conf_dia","rec_dia"]:
         return "raw"
     else:
         return "imp"
@@ -385,12 +406,12 @@ def my_callback(value1, value2, value3, value4):
     if value1 == "conf_acu":
         if value4 =="por":
             graph.add_trace(go.Scatter(x=df["datetime"], y=df["positive"],name="Confir.",line_color="#ffbb29"))
-            graph.add_trace(go.Scatter(x=df["datetime"], y=df["healed"],name="Recup.",line_color="#29ffb1",line=dict(dash="dashdot")))
-            graph.add_trace(go.Scatter(x=df["datetime"], y=df["death"],name="Óbitos",line_color="#ff29cd"))
+            graph.add_trace(go.Scatter(x=df["datetime"], y=df["recovered"],name="Recup.",line_color="#29ffb1",line=dict(dash="dashdot")))
+            graph.add_trace(go.Scatter(x=df["datetime"], y=df["deaths"],name="Óbitos",line_color="#ff29cd"))
         else:
             graph.add_trace(go.Scatter(x=df["datetime"], y=df["positive"],name="Confir.",line_color="#ffbb29"))
-            graph.add_trace(go.Scatter(x=df["datetime"], y=df["healed"],name="Recov.",line_color="#29ffb1",line=dict(dash="dashdot")))
-            graph.add_trace(go.Scatter(x=df["datetime"], y=df["death"],name="Deaths",line_color="#ff29cd"))
+            graph.add_trace(go.Scatter(x=df["datetime"], y=df["recovered"],name="Recov.",line_color="#29ffb1",line=dict(dash="dashdot")))
+            graph.add_trace(go.Scatter(x=df["datetime"], y=df["deaths"],name="Deaths",line_color="#ff29cd"))
 
     if value1 == "sex_acu":
         graph.add_trace(go.Scatter(x=df["datetime"], y=df["fem"],name="Fem.",line_color="#ccd0ff"))
@@ -404,21 +425,21 @@ def my_callback(value1, value2, value3, value4):
             graph.add_trace(go.Scatter(x=df["datetime"], y=df["positive_s"],name="Cases At The Day"))
             graph.add_trace(go.Scatter(x=df["datetime"], y=df["positive_m"],name="7 Day Mean",line_color="#33f8ff"))
 
-    if value1 == "sars_dia":
+    if value1 == "rec_dia":
         if value4 =="por":
-            graph.add_trace(go.Scatter(x=df["datetime"], y=df["sars_s"],name="Casos No Dia"))
-            graph.add_trace(go.Scatter(x=df["datetime"], y=df["sars_m"],name="Média De 7 Dias",line_color="#33f8ff"))
+            graph.add_trace(go.Scatter(x=df["datetime"], y=df["recovered_s"],name="Casos No Dia"))
+            graph.add_trace(go.Scatter(x=df["datetime"], y=df["recovered_m"],name="Média De 7 Dias",line_color="#33f8ff"))
         else:
-            graph.add_trace(go.Scatter(x=df["datetime"], y=df["sars_s"],name="Cases At The Day"))
-            graph.add_trace(go.Scatter(x=df["datetime"], y=df["sars_m"],name="7 Day Mean",line_color="#33f8ff"))
+            graph.add_trace(go.Scatter(x=df["datetime"], y=df["recovered_s"],name="Cases At The Day"))
+            graph.add_trace(go.Scatter(x=df["datetime"], y=df["recovered_m"],name="7 Day Mean",line_color="#33f8ff"))
 
     if value1 == "obt_acu":
         if value4 =="por":
             graph.add_trace(go.Scatter(x=df["datetime"], y=df["sars"],name="Grave",line_color="#ff29cd",line=dict(dash="dashdot")))
-            graph.add_trace(go.Scatter(x=df["datetime"], y=df["death"],name="Óbito",line_color="#ff29cd"))
+            graph.add_trace(go.Scatter(x=df["datetime"], y=df["deaths"],name="Óbito",line_color="#ff29cd"))
         else:
             graph.add_trace(go.Scatter(x=df["datetime"], y=df["sars"],name="Severe",line_color="#ff29cd",line=dict(dash="dashdot")))
-            graph.add_trace(go.Scatter(x=df["datetime"], y=df["death"],name="Death",line_color="#ff29cd"))
+            graph.add_trace(go.Scatter(x=df["datetime"], y=df["deaths"],name="Death",line_color="#ff29cd"))
 
     if value3 == "sm":
         graph.update_layout(
@@ -442,7 +463,8 @@ def my_callback(value1, value2, value3, value4):
                 width=900,
                 margin=dict(l=10, r=10, b=10, t=10),
                 xaxis = dict(
-                    tickmode='array', tickvals=['2021-01-01','2021-04-02','2021-07-09','2021-06-03'],
+                    tickmode='array', 
+                    tickvals=['2021-01-01','2021-04-02','2021-07-09','2021-06-03'],
                     ticktext=['Ano-Novo','Sexta-Santa','Rev-Const','Corpus-Christi'],
                     tickangle=-45,
                     gridcolor="#1f5954"
@@ -458,7 +480,8 @@ def my_callback(value1, value2, value3, value4):
                 width=900,
                 margin=dict(l=10, r=10, b=10, t=10),
                 xaxis = dict(
-                    tickmode='array', tickvals=['2021-01-01','2021-04-02','2021-07-09','2021-06-03'],
+                    tickmode='array', 
+                    tickvals=['2021-01-01','2021-04-02','2021-07-09','2021-06-03'],
                     ticktext=["New Year","Good Friday","1932 SP Rev.","Corpus-Christi"],
                     tickangle=-45,
                     gridcolor="#1f5954"
@@ -475,7 +498,9 @@ def my_callback(value1, value2, value3, value4):
             width=900,
             margin=dict(l=10, r=10, b=10, t=10),
             xaxis = dict(
-                tickmode='array', tickvals=asf[asf["positive"].isnull()]["datetime"],
+                tickmode='array', 
+                tickvals=asf[asf["positive"].isnull()]["datetime"],
+                showticklabels = False,
                 tickangle=-90,
                 gridcolor="#1f5954"
                 ),
